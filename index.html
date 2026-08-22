@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>GMLX Downloader</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      background: transparent;
+      height: 100vh;
+      overflow: hidden;
+      padding: 8px;
+    }
+
+    .app-container {
+      width: 100%;
+      height: 100%;
+      background: rgba(16, 16, 22, 0.82);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+    }
+
+    .title-bar {
+      height: 42px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      -webkit-app-region: drag;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand img {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .brand span {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 6px;
+      -webkit-app-region: no-drag;
+    }
+
+    .win-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.2s ease;
+    }
+
+    .win-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .win-btn.close:hover {
+      background: #ff4757;
+      border-color: #ff4757;
+    }
+
+    .content {
+      padding: 14px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .card-title {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fff;
+      font-size: 12px;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    select {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 0 8px;
+      color: #fff;
+      font-size: 11px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .btn-primary {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .queue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 190px;
+      overflow-y: auto;
+    }
+
+    .queue-item {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .queue-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .queue-info {
+      overflow: hidden;
+      max-width: 75%;
+    }
+
+    .queue-url {
+      color: #fff;
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .queue-meta {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 10px;
+    }
+
+    .badge {
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge.pending { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+    .badge.downloading { background: rgba(13, 110, 253, 0.2); color: #0d6efd; }
+    .badge.completed { background: rgba(25, 135, 84, 0.2); color: #198754; }
+    .badge.error { background: rgba(220, 53, 69, 0.25); color: #ff6b6b; }
+
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 10px;
+      background: rgba(220, 53, 69, 0.1);
+      padding: 4px 6px;
+      border-radius: 4px;
+      word-break: break-word;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="title-bar">
+      <div class="brand">
+        <img src="https://r2.fivemanage.com/9yioUTbf8iIYbT0yC5ELn/3b30d667-6549-4105-ab9f-aba350c3b156.jpg" alt="Logo">
+        <span>GML Downloader</span>
+      </div>
+      <div class="window-controls">
+        <div class="win-btn" onclick="controlWindow('minimize')">─</div>
+        <div class="win-btn" onclick="controlWindow('maximize')">□</div>
+        <div class="win-btn close" onclick="controlWindow('close')">✕</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <div class="card-title">Carpeta de Destino</div>
+        <div class="input-group">
+          <input type="text" id="folderPath" placeholder="Selecciona la carpeta..." readonly>
+          <button class="btn" onclick="selectFolder()">Buscar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Añadir Enlace</div>
+        <div class="input-group" style="margin-bottom: 8px;">
+          <input type="text" id="urlInput" placeholder="Pega el enlace de YouTube aquí...">
+        </div>
+        <div class="input-group">
+          <select id="formatSelect">
+            <option value="mp4">MP4 (Video)</option>
+            <option value="mp3">MP3 (Audio)</option>
+            <option value="mkv">MKV</option>
+          </select>
+          <select id="qualitySelect">
+            <option value="max">Máxima Calidad</option>
+            <option value="1080">1080p</option>
+            <option value="720">720p</option>
+          </select>
+          <button class="btn btn-primary" onclick="addToQueue()">+ Añadir</button>
+        </div>
+      </div>
+
+      <div class="card" style="flex: 1;">
+        <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Cola de Descargas</span>
+          <button class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;" onclick="startQueue()">Iniciar</button>
+        </div>
+        <div class="queue-list" id="queueList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    let downloadQueue = [];
+    let isProcessing = false;
+
+    function controlWindow(action) {
+      ipcRenderer.send('window-control', action);
+    }
+
+    async function selectFolder() {
+      const folder = await ipcRenderer.invoke('select-folder');
+      if (folder) document.getElementById('folderPath').value = folder;
+    }
+
+    function addToQueue() {
+      const urlInput = document.getElementById('urlInput');
+      const url = urlInput.value.trim();
+      const format = document.getElementById('formatSelect').value;
+      const quality = document.getElementById('qualitySelect').value;
+
+      if (!url) return;
+
+      downloadQueue.push({
+        id: Date.now(),
+        url,
+        format,
+        quality,
+        status: 'pending',
+        errorDetails: ''
+      });
+
+      urlInput.value = '';
+      renderQueue();
+    }
+
+    function renderQueue() {
+      const queueList = document.getElementById('queueList');
+      queueList.innerHTML = '';
+
+      downloadQueue.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'queue-item';
+
+        div.innerHTML = `
+          <div class="queue-header">
+            <div class="queue-info">
+              <div class="queue-url">${item.url}</div>
+              <div class="queue-meta">${item.format.toUpperCase()} | ${item.quality}</div>
+            </div>
+            <span class="badge ${item.status}">${item.status}</span>
+          </div>
+          ${item.errorDetails ? `<div class="error-msg">${item.errorDetails}</div>` : ''}
+        `;
+
+        queueList.appendChild(div);
+      });
+    }
+
+    async function startQueue() {
+      const folder = document.getElementById('folderPath').value;
+      if (!folder) {
+        alert('Selecciona una carpeta primero.');
+        return;
+      }
+
+      if (isProcessing) return;
+      isProcessing = true;
+
+      for (let item of downloadQueue) {
+        if (item.status === 'pending') {
+          item.status = 'downloading';
+          item.errorDetails = '';
+          renderQueue();
+
+          const result = await ipcRenderer.invoke('download-single-item', {
+            url: item.url,
+            folder,
+            quality: item.quality,
+            format: item.format
+          });
+
+          if (result.success) {
+            item.status = 'completed';
+          } else {
+            item.status = 'error';
+            item.errorDetails = result.error;
+          }
+          renderQueue();
+        }
+      }
+
+      isProcessing = false;
+    }
+  </script>
+</body>
+</html>

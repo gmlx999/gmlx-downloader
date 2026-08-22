@@ -1,0 +1,30 @@
+{
+  "name": "gml-downloader",
+  "version": "1.0.0",
+  "description": "GML Media Downloader - Glassmorphism Edition",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.gml.downloader",
+    "productName": "GML Downloader",
+    "win": {
+      "icon": "icon.ico",
+      "target": "nsis"
+    },
+    "asarUnpack": [
+      "**/node_modules/yt-dlp-exec/bin/**",
+      "**/node_modules/ffmpeg-static/**"
+    ]
+  },
+  "dependencies": {
+    "ffmpeg-static": "^5.2.0",
+    "yt-dlp-exec": "^2.0.0"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  }
+}
