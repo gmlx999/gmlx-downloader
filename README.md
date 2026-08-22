@@ -24,11 +24,6 @@ A fast and optimized tool built to download music and videos effortlessly.
 * **[+] Download Queue:** Add multiple links and download them all together to your folder of choice.
 
 * --------------
-¡Mala mía! Entendí mal y pensé que querías meter el contenido dentro de una tabla de Lua.
-
-Aquí tienes el archivo README.md puro y limpio listo para copiar/pegar directo en tu repositorio:
-
-Markdown
 # GML Downloader
 
 **GML Downloader** es una aplicación de escritorio liviana, moderna y de alto rendimiento diseñada para descargar audio y video desde YouTube con una interfaz *Glassmorphism* totalmente personalizada.
